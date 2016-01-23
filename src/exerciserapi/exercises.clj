@@ -7,10 +7,14 @@
       db   (mg/get-db conn "exerciser")
       coll "exercises"]
 
+  (defn bson-to-str [entry k]
+    "Provides a workaround for chesire not supporting BSON, making it a string instead"
+    (assoc entry k (clojure.core/str (k entry)) ))
+
   (defn id-to-str [entry]
-    "Provides a workaround for chesire not supporting BSON, making it a string instead" 
-    (assoc entry :_id (clojure.core/str (:_id entry)) ))
-  
+   "Shorthand for id conversion"
+   (bson-to-str entry :_id))
+
   (defn get-exercises []
    "Retrieves all exercises" 
     (let [result (mc/find-maps db coll)]
