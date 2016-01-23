@@ -9,8 +9,8 @@
   (context "/exercises" [] (defroutes exercises-routes
     (GET "/" [] (exercises/get-exercises))
     (context "/:id" [id] (defroutes exercise-routes
-      (GET "/" [] (exercises/get-exercise id)))))))
-  ; (route/not-found "Not Found"))
+      (GET "/" [] (exercises/get-exercise id))))))
+   (route/not-found "Not Found"))
 
 (def app
   (-> (handler/api app-routes)
