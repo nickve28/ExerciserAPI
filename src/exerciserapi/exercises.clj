@@ -27,4 +27,9 @@
     "Finds exercise based on id"
     (let [result (mc/find-one-as-map db coll {:_id (ObjectId. id)})]
       {:body (id-to-str result) }))
-  )
+  
+  (defn save-exercise [data]
+    "Saves an exercise"
+    (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
+      {:body (id-to-str result)}))
+)

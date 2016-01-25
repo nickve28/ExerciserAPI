@@ -8,6 +8,7 @@
 (defroutes app-routes
   (context "/exercises" [] (defroutes exercises-routes
     (GET "/" [] (exercises/get-exercises))
+    (POST "/" request (exercises/save-exercise (:body request))) 
     (context "/:id" [id] (defroutes exercise-routes
       (GET "/" [] (exercises/get-exercise id))))))
    (route/not-found "Not Found"))
