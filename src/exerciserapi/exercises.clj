@@ -3,6 +3,13 @@
             [monger.collection :as mc])
   (:import org.bson.types.ObjectId))
 
+(defn http-response 
+  ([data status]
+   (http-response data status nil))
+  ([data status message]
+    {:body data :status status :message message})
+) 
+
 (let [conn (mg/connect)
       db   (mg/get-db conn "exerciser")
       coll "exercises"]
@@ -18,18 +25,18 @@
   (defn get-exercises []
    "Retrieves all exercises" 
     (let [result (mc/find-maps db coll)]
-      {:body (map (fn [entry]
+      (http-response (map (fn [entry]
          (id-to-str entry)) 
          result
-      )}))
+      ) 200)))
 
   (defn get-exercise [id]
     "Finds exercise based on id"
     (let [result (mc/find-one-as-map db coll {:_id (ObjectId. id)})]
-      {:body (id-to-str result) }))
+      (http-response (id-to-str result) 200)))
   
   (defn save-exercise [data]
     "Saves an exercise"
     (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
-      {:body (id-to-str result)}))
+      (http-response (id-to-str result) 201)))
 )
