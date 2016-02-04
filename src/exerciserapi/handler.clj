@@ -4,9 +4,10 @@
             [ring.middleware.json :as middleware]
             [compojure.route :as route]
             [exerciserapi.exercises :as exercises]))
+(def prefix "/api")
 
 (defroutes app-routes
-  (context "/exercises" [] (defroutes exercises-routes
+  (context (str prefix "/exercises") [] (defroutes exercises-routes
     (GET "/" [] (exercises/get-exercises))
     (POST "/" request (exercises/save-exercise (:body request))) 
     (context "/:id" [id] (defroutes exercise-routes
