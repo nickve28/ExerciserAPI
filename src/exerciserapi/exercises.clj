@@ -22,9 +22,9 @@
    "Shorthand for id conversion"
    (bson-to-str entry :_id))
 
-  (defn get-exercises []
-   "Retrieves all exercises" 
-    (let [result (mc/find-maps db coll)]
+  (defn get-exercises [params]
+   "Retrieves all exercises, allows filter"
+    (let [result (mc/find-maps db coll params)]
       (http-response (map (fn [entry]
          (id-to-str entry)) 
          result

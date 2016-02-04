@@ -8,7 +8,7 @@
 
 (defroutes app-routes
   (context (str prefix "/exercises") [] (defroutes exercises-routes
-    (GET "/" [] (exercises/get-exercises))
+    (GET "/" {params :params} (exercises/get-exercises params))
     (POST "/" request (exercises/save-exercise (:body request))) 
     (context "/:id" [id] (defroutes exercise-routes
       (GET "/" [] (exercises/get-exercise id))))))
