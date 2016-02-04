@@ -39,4 +39,9 @@
     "Saves an exercise"
     (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
       (http-response (id-to-str result) 201)))
+ 
+  (defn update-exercise [id data]
+    "Updates the exercise with the given id"
+    (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
+      (http-response {:result "Update successfull"}  200)))
 )
