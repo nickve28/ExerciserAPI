@@ -44,4 +44,8 @@
     "Updates the exercise with the given id"
     (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
       (http-response {:result "Update successfull"}  200)))
+
+  (defn delete-exercise [id]
+    "Deletes the exercise"
+    (let [result (mc/remove-by-id db coll (ObjectId. id))] (http-response {:result "Deleted"} 200)))
 )

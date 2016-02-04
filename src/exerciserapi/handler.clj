@@ -12,7 +12,8 @@
     (POST "/" request (exercises/save-exercise (:body request))) 
     (context "/:id" [id] (defroutes exercise-routes
       (GET "/" [] (exercises/get-exercise id))
-      (PUT "/" {params :params body :body} (exercises/update-exercise (:id params) body))))))
+      (PUT "/" {params :params body :body} (exercises/update-exercise (:id params) body))
+      (DELETE "/" [id] (exercises/delete-exercise id))))))
    (route/not-found "Not Found"))
 
 (def app
