@@ -6,7 +6,8 @@
                  [compojure "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
                  [ring/ring-json "0.3.1"]
-                 [com.novemberain/monger "3.0.2"]]
+                 [com.novemberain/monger "3.0.2"]
+                 [com.novemberain/validateur "2.5.0"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler exerciserapi.handler/app}
   :profiles

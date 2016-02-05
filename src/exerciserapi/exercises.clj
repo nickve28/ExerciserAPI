@@ -1,7 +1,16 @@
 (ns exerciserapi.exercises
   (:require [monger.core :as mg]
-            [monger.collection :as mc])
+            [monger.collection :as mc]
+            [validateur.validation :refer :all])
   (:import org.bson.types.ObjectId))
+
+(def validations
+  (validation-set
+    (presence-of :name)
+    (presence-of :category)))
+
+(defn valid-record? [record]
+  (valid? validations record))
 
 (defn http-response 
   ([data status]
@@ -36,13 +45,17 @@
   
   (defn save-exercise [data]
     "Saves an exercise"
-    (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
-      (http-response (id-to-str result) 201)))
+    (if (valid-record? data)
+      (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
+        (http-response (id-to-str result) 201))
+      (http-response {:result (validations data) } 400)))
  
   (defn update-exercise [id data]
     "Updates the exercise with the given id"
-    (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
-      (http-response {:result "Update successfull"}  200)))
+    (if (valid-record? data)
+      (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
+        (http-response {:result "Update successfull"}  200))
+      (http-response {:result (validations data) } 400)))
 
   (defn delete-exercise [id]
     "Deletes the exercise"
