@@ -7,7 +7,7 @@
   ([data status]
     (http-response data status nil))
   ([data status message]
-    {:body data :status status :message message})
+    {:body data :status status :message message}))
 
 (let [conn (mg/connect)
   db (mg/get-db conn "exerciser")
@@ -26,8 +26,8 @@
     (let [result (mc/find-maps db coll params)]
       (http-response (map (fn [entry]
         (id-to-str entry))
-        result
-        200))))
+        result)
+        200)))
 
   (defn get-exercise [id]
     "Finds exercise based on id"
