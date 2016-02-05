@@ -3,12 +3,9 @@
             [ring.mock.request :as mock]
             [exerciserapi.handler :refer :all]))
 
-(deftest test-app
-  (testing "main route"
-    (let [response (app (mock/request :get "/"))]
-      (is (= (:status response) 200))
-      (is (= (:body response) "Hello World"))))
+;Todo: use binding to override DB calls (mock), and test routes
 
-  (testing "not-found route"
+(deftest test-app
+ (testing "not-found route"
     (let [response (app (mock/request :get "/invalid"))]
       (is (= (:status response) 404)))))

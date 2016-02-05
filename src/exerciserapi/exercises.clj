@@ -2,7 +2,8 @@
   (:require [monger.core :as mg]
             [monger.collection :as mc]
             [validateur.validation :refer :all]
-            [exerciserapi.bson :refer :all]))
+            [exerciserapi.bson :refer :all])
+  (:import org.bson.types.ObjectId))
 
 (def validations
   (validation-set
