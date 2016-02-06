@@ -10,8 +10,7 @@
     (presence-of :name)
     (presence-of :category)))
 
-(defn valid-record? [record]
-  (valid? validations record))
+(def valid-record? (partial valid? validations))
 
 (defn http-response 
   ([data status]
