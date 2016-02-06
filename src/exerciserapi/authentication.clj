@@ -2,7 +2,9 @@
 
 (require '[buddy.sign.jws :as jws])
 (require '[cheshire.core :as json])
-(def secret "foo")
+
+(def secret (:secret (with-open [r (clojure.java.io/reader "./config/secret.clj")]
+               (read (java.io.PushbackReader. r))))) 
 
 (defn login-handler
   [request]

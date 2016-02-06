@@ -10,7 +10,9 @@
 (require  '[buddy.auth.middleware :refer (wrap-authentication)])
 
 (def prefix "/api")
-(def secret "foo")
+(def secret (:secret (with-open [r (clojure.java.io/reader "./config/secret.clj")]
+               (read (java.io.PushbackReader. r))))) 
+
 (def backend (jws-backend {:secret secret}))
 
 (defroutes app-routes
