@@ -40,7 +40,7 @@
   
   (defn save-exercise [request]
     "Saves an exercise"
-    (when-authenticated request
+    (when-authenticated (authenticated? request)
       (let [data (:body request)]
         (if (valid-record? data)
           (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
@@ -49,7 +49,7 @@
  
   (defn update-exercise [request]
     "Updates the exercise with the given id"
-    (when-authenticated request
+    (when-authenticated (authenticated? request)
       (let [id (:id (:params request))
             data (:body request)]
         (if (valid-record? data)

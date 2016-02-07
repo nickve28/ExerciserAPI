@@ -22,16 +22,15 @@
 
   (defn get-workouts [request]
     "Retrieves all workouts"
-    (when-authenticated request
+    (when-authenticated (authenticated? request)
       (let [result (mc/find-maps db workout-col (:params request))]
         {:status 200 :body (map id-to-str result)})))
 
   (defn save-workout [request]
     "Saves a workout and its exercises"
-    (when-authenticated request
+    (when-authenticated (authenticated? request)
       (let [workout (:body request)]
         (if-not (valid-record? workout)
           {:status 400 :body (validations workout) }
           (let [result (mc/insert-and-return db workout-col workout)]
             {:status 201 :body (id-to-str result) }))))))
-            
