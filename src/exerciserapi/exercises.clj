@@ -4,7 +4,7 @@
             [validateur.validation :refer :all]
             [exerciserapi.bson :refer :all]
             [clj-time.core :as time]
-            [buddy.auth :refer [authenticated? throw-unauthorized]])
+            [exerciserapi.verification :refer [when-authenticated]])
   (:import org.bson.types.ObjectId))
 
 (def validations
@@ -19,12 +19,6 @@
     (http-response data status nil))
   ([data status message]
     {:body data :status status :message message}))
-
-(defmacro when-authenticated [request form]
-  "Wrapper that evaluates whether a request is authorized. If authorized, it will proceed with the given forms, otherwise a 401 is given"
-  (list 'if-not '(authenticated? request)
-    (http-response {:message "You need to be authorized"} 401)
-    form))
 
 (let [conn (mg/connect)
   db (mg/get-db conn "exerciser")
