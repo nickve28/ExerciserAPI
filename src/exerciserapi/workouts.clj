@@ -18,6 +18,7 @@
 
   (defn get-workouts [request]
     "Retrieves all workouts"
-    (let [result (mc/find-maps db coll (:params request))]
-      {:status 200 :body (map id-to-str result)})))
+    (when-authenticated request
+      (let [result (mc/find-maps db coll (:params request))]
+        {:status 200 :body (map id-to-str result)}))))
 
