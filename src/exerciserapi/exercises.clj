@@ -20,6 +20,12 @@
   ([data status message]
     {:body data :status status :message message}))
 
+(defmacro when-authenticated [request form]
+  "Wrapper that evaluates whether a request is authorized. If authorized, it will proceed with the given forms, otherwise a 401 is given"
+  (list 'if-not '(authenticated? request)
+    (http-response {:message "You need to be authorized"} 401)
+    form))
+
 (let [conn (mg/connect)
   db (mg/get-db conn "exerciser")
   coll "exercises"]
@@ -39,8 +45,7 @@
   
   (defn save-exercise [request]
     "Saves an exercise"
-    (if-not (authenticated? request)
-      (http-response {:message "You need to be authorized"} 401)
+    (when-authenticated request
       (let [data (:body request)]
         (if (valid-record? data)
           (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
@@ -49,14 +54,13 @@
  
   (defn update-exercise [request]
     "Updates the exercise with the given id"
-    (if-not (authenticated? request)
-      (http-response {:message "You need to be authorized"} 401)
+    (when-authenticated request
       (let [id (:id (:params request))
             data (:body request)]
         (if (valid-record? data)
           (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
-            (http-response {:result "Update successfull"}  200)))
-        (http-response {:result (validations data) } 400))))
+            (http-response {:result "Update successfull"}  200))
+        (http-response {:result (validations data) } 400)))))
 
   (defn delete-exercise [id]
     "Deletes the exercise"
