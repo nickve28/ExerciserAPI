@@ -4,6 +4,7 @@
             [ring.middleware.json :as middleware]
             [compojure.route :as route]
             [exerciserapi.exercises :as exercises]
+            [exerciserapi.workouts :as workouts]
             [exerciserapi.authentication :as auth]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
 
@@ -25,6 +26,8 @@
       (GET "/" [] (exercises/get-exercise id))
       (PUT "/" [] exercises/update-exercise)
       (DELETE "/" [] (exercises/delete-exercise id))))))
+  (context (str prefix "/workouts") [] (defroutes workout-routes
+    (GET "/" [] workouts/get-workouts)))
    (route/not-found "Not Found"))
 
 (def app
