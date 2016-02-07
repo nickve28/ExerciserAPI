@@ -27,7 +27,8 @@
       (PUT "/" [] exercises/update-exercise)
       (DELETE "/" [] (exercises/delete-exercise id))))))
   (context (str prefix "/workouts") [] (defroutes workout-routes
-    (GET "/" [] workouts/get-workouts)))
+    (GET "/" [] workouts/get-workouts))
+    (POST "/" [] workouts/save-workout))
    (route/not-found "Not Found"))
 
 (def app

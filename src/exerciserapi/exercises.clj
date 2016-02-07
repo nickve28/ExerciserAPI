@@ -4,6 +4,7 @@
             [validateur.validation :refer :all]
             [exerciserapi.bson :refer :all]
             [clj-time.core :as time]
+            [buddy.auth :refer [authenticated? throw-unauthorized]]
             [exerciserapi.verification :refer [when-authenticated]])
   (:import org.bson.types.ObjectId))
 

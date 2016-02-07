@@ -3,7 +3,8 @@
             [monger.collection :as mc]
             [validateur.validation :refer :all]
             [exerciserapi.bson :refer :all]
-            [clj-time.core :as time])
+            [clj-time.core :as time]
+            [buddy.hashers :as hashers])
   (:import org.bson.types.ObjectId))
 
 (require '[buddy.sign.jws :as jws])
