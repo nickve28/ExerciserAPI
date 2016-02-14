@@ -12,7 +12,7 @@
 
 (def prefix "/api")
 (def secret (:secret (with-open [r (clojure.java.io/reader "./config/secret.clj")]
-               (read (java.io.PushbackReader. r))))) 
+               (read (java.io.PushbackReader. r)))))
 
 (def backend (jws-backend {:secret secret :options {:alg :hs512}}))
 
@@ -21,11 +21,11 @@
     (POST "/login" request (auth/login-handler request))))
   (context (str prefix "/exercises") [] (defroutes exercises-routes
     (GET "/" {params :params} (exercises/get-exercises params))
-    (POST "/" [] exercises/save-exercise) 
+    (POST "/" [] exercises/save-exercise)
     (context "/:id" [id] (defroutes exercise-routes
       (GET "/" [] (exercises/get-exercise id))
       (PUT "/" [] exercises/update-exercise)
-      (DELETE "/" [] (exercises/delete-exercise id))))))
+      (DELETE "/" [] exercises/delete-exercise)))))
   (context (str prefix "/workouts") [] (defroutes workouts-routes
     (GET "/" [] workouts/get-workouts)
     (context "/:id" [] (defroutes workout-routes

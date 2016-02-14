@@ -31,7 +31,7 @@
 
   (defn save-exercise [request]
     "Saves an exercise"
-    (when-authenticated (authenticated? request)
+    (when-authenticated request
       (let [data (:body request)]
         (if (valid-record? data)
           (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
@@ -40,7 +40,7 @@
 
   (defn update-exercise [request]
     "Updates the exercise with the given id"
-    (when-authenticated (authenticated? request)
+    (when-authenticated request
       (let [id (:id (:params request))
             data (:body request)]
         (if (valid-record? data)
@@ -48,7 +48,9 @@
             {:status 200 :body (assoc data :id id)})
         {:status 400 :body (validations data)}))))
 
-  (defn delete-exercise [id]
+  (defn delete-exercise [request]
     "Deletes the exercise"
-    (let [result (mc/remove-by-id db coll (ObjectId. id))]
-      {:status 200 :body "Removed successfully."})))
+    (when-authenticated request
+      (let [id (:id (:params request))
+            result (mc/remove-by-id db coll (ObjectId. id))]
+        {:status 200 :body {:message "Removed successfully."}}))))
