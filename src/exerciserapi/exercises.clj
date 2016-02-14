@@ -15,12 +15,6 @@
 
 (def valid-record? (partial valid? validations))
 
-(defn http-response 
-  ([data status]
-    (http-response data status nil))
-  ([data status message]
-    {:body data :status status :message message}))
-
 (let [conn (mg/connect)
   db (mg/get-db conn "exerciser")
   coll "exercises"]
@@ -28,25 +22,22 @@
   (defn get-exercises [params]
    "Retrieves all exercises, allows filter"
     (let [result (mc/find-maps db coll params)]
-      (http-response (map (fn [entry]
-        (id-to-str entry))
-        result)
-        200)))
+      {:status 200 :body (map id-to-str result)}))
 
   (defn get-exercise [id]
     "Finds exercise based on id"
     (let [result (mc/find-one-as-map db coll {:_id (ObjectId. id)})]
-      (http-response (id-to-str result) 200)))
-  
+      {:status 200 :body (id-to-str result)}))
+
   (defn save-exercise [request]
     "Saves an exercise"
     (when-authenticated (authenticated? request)
       (let [data (:body request)]
         (if (valid-record? data)
           (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
-            (http-response (id-to-str result) 201))
-          (http-response {:result (validations data) } 400)))))
- 
+            {:status 200 :body (id-to-str result)})
+          {:status 400 :body (validations data)}))))
+
   (defn update-exercise [request]
     "Updates the exercise with the given id"
     (when-authenticated (authenticated? request)
@@ -54,9 +45,10 @@
             data (:body request)]
         (if (valid-record? data)
           (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
-            (http-response {:result "Update successfull"}  200))
-        (http-response {:result (validations data) } 400)))))
+            {:status 200 :body (assoc data :id id)})
+        {:status 400 :body (validations data)}))))
 
   (defn delete-exercise [id]
     "Deletes the exercise"
-    (let [result (mc/remove-by-id db coll (ObjectId. id))] (http-response {:result "Deleted"} 200))))
+    (let [result (mc/remove-by-id db coll (ObjectId. id))]
+      {:status 200 :body "Removed successfully."})))
