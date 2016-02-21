@@ -6,6 +6,7 @@
             [exerciserapi.exercises :as exercises]
             [exerciserapi.workouts :as workouts]
             [exerciserapi.authentication :as auth]
+            [ring.middleware.cors :refer [wrap-cors]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
 
 (require  '[buddy.auth.backends.token :refer (jws-backend)])
@@ -35,6 +36,7 @@
 
 (def app
   (-> (handler/api app-routes)
+      (wrap-cors routes #".*")
       (wrap-authorization backend)
       (wrap-authentication backend)
       (middleware/wrap-json-body {:keywords? true})

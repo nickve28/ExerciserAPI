@@ -6,6 +6,7 @@
                  [compojure "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
                  [ring/ring-json "0.3.1"]
+                 [jumblerg/ring.middleware.cors "1.0.1"]
                  [com.novemberain/monger "3.0.2"]
                  [com.novemberain/validateur "2.5.0"]
                  [buddy/buddy-auth "0.9.0"]
