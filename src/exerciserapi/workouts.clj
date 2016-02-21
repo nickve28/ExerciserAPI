@@ -4,14 +4,22 @@
             [validateur.validation :refer :all]
             [exerciserapi.bson :refer :all]
             [exerciserapi.verification :refer [when-authenticated]]
+            [exerciserapi.exercises :refer [get-exercises]]
             [buddy.auth :refer [authenticated? throw-unauthorized]])
   (:import org.bson.types.ObjectId))
+
+(def exercises (future (map :name (:body (get-exercises {})))))
 
 (def validations (validation-set
                    (presence-of :name)
                    (presence-of :category)
                    (presence-of :date)
-                   (presence-of :exercises))) ;todo better validation
+                   (presence-of :exercises)
+                   (validate-with-predicate :exercises
+                      (fn [workout]
+                        (let [performed-exercises (:exercises workout)
+                              names (map :name performed-exercises)]
+                          (every? #(contains? (set @exercises) %) names))))))
 
 (def valid-record? (partial valid? validations))
 
