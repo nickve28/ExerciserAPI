@@ -22,12 +22,12 @@
   (defn get-exercises [params]
    "Retrieves all exercises, allows filter"
     (let [result (mc/find-maps db coll params)]
-      {:status 200 :body (map id-to-str result)}))
+      (map id-to-str result)))
 
   (defn get-exercise [id]
     "Finds exercise based on id"
     (let [result (mc/find-one-as-map db coll {:_id (ObjectId. id)})]
-      {:status 200 :body (id-to-str result)}))
+      (id-to-str result)))
 
   (defn save-exercise [request]
     "Saves an exercise"
