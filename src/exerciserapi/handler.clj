@@ -62,6 +62,7 @@
         (POST "/" []
           :summary "Saves an exercise"
           :body-params [name :- String, category :- String]
+          :header-params [{Authorization :- String nil}]
           :middleware [token-auth-middleware authenticated-middleware]
           :return Exercise
           (save-exercise name category))))
