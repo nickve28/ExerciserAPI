@@ -5,15 +5,11 @@
             [exerciserapi.workouts :as workouts]
             [exerciserapi.authentication :as auth]
             [exerciserapi.verification :refer [when-authenticated]]
+            [exerciserapi.middleware.token_auth :refer [token-auth-middleware]]
             [ring.middleware.cors :refer [wrap-cors]]
+            [buddy.auth :refer [authenticated? throw-unauthorized]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]))
 (require '[schema.core :as s])
-(require  '[buddy.auth.backends.token :refer (jws-backend)])
-
-(def secret (:secret (with-open [r (clojure.java.io/reader "./config/secret.clj")]
-               (read (java.io.PushbackReader. r)))))
-
-(def backend (jws-backend {:secret secret :options {:alg :hs512}}))
 
 ;todo
 (s/defschema Exercise
@@ -21,21 +17,30 @@
    :category s/Str
    :_id s/Str})
 
-(defn get-exercises [request]
-  (ok (exercises/get-exercises (:params request))))
+(defn get-exercises [params]
+  (let [filtered-params (into {} (filter second params))]
+    (ok (exercises/get-exercises filtered-params))))
 
 (defn get-exercise [id]
   (ok (exercises/get-exercise id)))
 
-(defn save-exercise [request]
-  (when-authenticated request
-    (exercises/save-exercise (:body request))))
+(defn save-exercise [name category]
+  (created (exercises/save-exercise {:name name :category category})))
 
-(defn authenticate [username password]
+(defn login [username password]
   (let [result (auth/login-handler {:username username :password password})]
     (if (:error result)
       (bad-request result)
       (ok result))))
+
+(defn authenticated-middleware
+    "Middleware used in routes that require authentication. If request is not
+       authenticated a 401 not authorized response will be returned"
+  [handler]
+  (fn [request]
+    (if (authenticated? request)
+       (handler request)
+       (unauthorized {:error "Not authorized"}))))
 
 (defapi app
   (swagger-routes)
@@ -46,7 +51,7 @@
           :summary "retrieves exercises"
           :query-params [{category :- String nil}]
           :return [Exercise]
-          (get-exercises (category)))
+          (get-exercises {:category category}))
         (GET "/:id" []
           :summary "retrieves exercise by id"
           :path-params [id :- String]
@@ -55,15 +60,16 @@
         (POST "/" []
           :summary "Saves an exercise"
           :body-params [name :- String, category :- String]
-          :return Exercise
-          save-exercise))
+          :middleware [token-auth-middleware authenticated-middleware]
+          ;:return Exercise
+          (save-exercise name category)))
       (context "/auth" []
         :tags ["auth"]
         (POST "/login" []
           :summary "Logs the user in"
           :body-params [username :- String, password :- String]
           :return String
-          (authenticate username password)))))
+          (login username password)))))
 
 
 ;(def app

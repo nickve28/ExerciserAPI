@@ -29,14 +29,10 @@
     (let [result (mc/find-one-as-map db coll {:_id (ObjectId. id)})]
       (id-to-str result)))
 
-  (defn save-exercise [request]
+  (defn save-exercise [exercise]
     "Saves an exercise"
-    (when-authenticated request
-      (let [data (:body request)]
-        (if (valid-record? data)
-          (let [result (mc/insert-and-return db coll (select-keys data [:name :category]))]
-            {:status 200 :body (id-to-str result)})
-          {:status 400 :body (validations data)}))))
+    (let [result (mc/insert-and-return db coll (select-keys exercise [:name :category]))]
+      (id-to-str result)))
 
   (defn update-exercise [request]
     "Updates the exercise with the given id"
