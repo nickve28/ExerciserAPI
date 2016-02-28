@@ -34,15 +34,11 @@
     (let [result (mc/insert-and-return db coll (select-keys exercise [:name :category]))]
       (id-to-str result)))
 
-  (defn update-exercise [request]
+  (defn update-exercise [id exercise]
     "Updates the exercise with the given id"
-    (when-authenticated request
-      (let [id (:id (:params request))
-            data (:body request)]
-        (if (valid-record? data)
-          (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys data [:name :category]))]
-            {:status 200 :body (assoc data :id id)})
-        {:status 400 :body (validations data)}))))
+    (let [result (mc/update-by-id db coll (ObjectId. id) (select-keys exercise [:name :category]))]
+      (println result)
+      (assoc exercise :_id id)))
 
   (defn delete-exercise [request]
     "Deletes the exercise"

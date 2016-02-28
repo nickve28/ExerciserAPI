@@ -35,6 +35,12 @@
   (let [result (exercises/save-exercise {:name name :category category})]
     (created result)))
 
+(defn update-exercise [id name category]
+  (let [params {:name name :category category}
+        filtered-params (into {} (filter second params))
+        result (exercises/update-exercise id filtered-params)]
+    (ok result)))
+
 (defn login [username password]
   (let [result (auth/login-handler {:username username :password password})]
     (if (:error result)
@@ -42,8 +48,8 @@
       (ok result))))
 
 (defn authenticated-middleware
-    "Middleware used in routes that require authentication. If request is not
-       authenticated a 401 not authorized response will be returned"
+  "Middleware used in routes that require authentication. If request is not
+   authenticated a 401 not authorized response will be returned"
   [handler]
   (fn [request]
     (if (authenticated? request)
@@ -69,7 +75,15 @@
           :header-params [{Authorization :- String nil}]
           :middleware [token-auth-middleware authenticated-middleware]
           :return Exercise
-          (save-exercise name category))))
+          (save-exercise name category))
+        (PUT "/:id" []
+          :summary "Updates an exercise"
+          :path-params [id :- String]
+          :body-params [{name :- String nil},{category :- String nil}]
+          :header-params [{Authorization :- String nil}]
+          :middleware [token-auth-middleware authenticated-middleware]
+          :return Exercise
+          (update-exercise id name category))))
 
 (def auth-routes
   (context "/auth" []
