@@ -26,10 +26,14 @@
     (ok (exercises/get-exercises filtered-params))))
 
 (defn get-exercise [id]
-  (ok (exercises/get-exercise id)))
+  (let [result (exercises/get-exercise id)]
+    (if (:name result)
+      (ok result)
+      (not-found {:message (str "Nothing found for for id" id)}))))
 
 (defn save-exercise [name category]
-  (created (exercises/save-exercise {:name name :category category})))
+  (let [result (exercises/save-exercise {:name name :category category})]
+    (created result)))
 
 (defn login [username password]
   (let [result (auth/login-handler {:username username :password password})]
