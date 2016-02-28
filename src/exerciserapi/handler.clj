@@ -17,6 +17,10 @@
    :category s/Str
    :_id s/Str})
 
+(s/defschema User
+  {:username s/Str
+   :token s/Str})
+
 (defn get-exercises [params]
   (let [filtered-params (into {} (filter second params))]
     (ok (exercises/get-exercises filtered-params))))
@@ -42,10 +46,8 @@
        (handler request)
        (unauthorized {:error "Not authorized"}))))
 
-(defapi app
-  (swagger-routes)
-    (context "/api" []
-      (context "/exercises" []
+(def exercise-routes
+  (context "/exercises" []
         :tags ["exercises"]
         (GET "/" []
           :summary "retrieves exercises"
@@ -61,16 +63,30 @@
           :summary "Saves an exercise"
           :body-params [name :- String, category :- String]
           :middleware [token-auth-middleware authenticated-middleware]
-          ;:return Exercise
-          (save-exercise name category)))
-      (context "/auth" []
-        :tags ["auth"]
-        (POST "/login" []
-          :summary "Logs the user in"
-          :body-params [username :- String, password :- String]
-          :return String
-          (login username password)))))
+          :return Exercise
+          (save-exercise name category))))
 
+(def auth-routes
+  (context "/auth" []
+    :tags ["auth"]
+    (POST "/login" []
+      :summary "Logs the user in"
+      :body-params [username :- String, password :- String]
+      :return User
+      (login username password))))
+
+
+(defapi app
+  {:swagger
+    {:ui "/api-docs"
+     :spec "/swagger.json"
+     :data {:info {:title "ExerciserApi"
+                   :version "0.0.1"}
+            :tags [{:name "auth"         :description "Authentication routes"}
+                   {:name "exercises"    :description "Routes for the exercise model"}]}}}
+    (context "/api" []
+      exercise-routes
+      auth-routes))
 
 ;(def app
 ;  (-> (handler/api app-routes)

@@ -35,6 +35,6 @@
                   claims {:user id
                           :exp (time/plus (time/now) (time/seconds 3600))}
                   token (jws/sign claims secret {:alg :hs512})]
-              (json/encode {:token token}))
+              {:token token :username username})
             {:error "Wrong password provided."})))
       {:error "Validation failed" :message (validations record)})))
